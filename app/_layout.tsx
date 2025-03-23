@@ -1,39 +1,66 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { SplashScreen, Stack } from "expo-router";
+import { useColorScheme, View } from "react-native";
+import {
+  MD3DarkTheme,
+  PaperProvider,
+  DefaultTheme,
+  ActivityIndicator,
+} from "react-native-paper";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Toaster } from "sonner-native";
+import AuthContextProvider, { useAuthContext } from "@/context/useAuth";
+import { useColors } from "@/config/useColors";
+import { useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+export function RootLayout() {
+  const isDark = useColorScheme() === "dark";
+  const { lightModeColor } = useColors();
+  const { authChecking, checkAuth } = useAuthContext();
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
+    checkAuth();
+  }, []);
+  if (authChecking) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: lightModeColor,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        statusBarStyle: isDark ? "light" : "dark",
+      }}
+    />
+  );
+}
+
+export default function RootLayoutWrapper() {
+  const isDark = useColorScheme() === "dark";
+  const { lightModeColor } = useColors();
+  return (
+    <AuthContextProvider>
+      <GestureHandlerRootView>
+        <SafeAreaView style={{ flex: 1, backgroundColor: lightModeColor }}>
+          <PaperProvider theme={isDark ? MD3DarkTheme : DefaultTheme}>
+            <StatusBar style={isDark ? "light" : "dark"} />
+            <RootLayout />
+          </PaperProvider>
+        </SafeAreaView>
+        <Toaster position="bottom-center" />
+      </GestureHandlerRootView>
+    </AuthContextProvider>
   );
 }

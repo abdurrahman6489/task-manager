@@ -1,6 +1,6 @@
-import { retrieveAuthToken } from "@/Utils/AuthToken";
+import { removeAuthToken, retrieveAuthToken } from "@/Utils/AuthToken";
 import { getAuthStateFromToken } from "@/Utils/getAuthStateFromToken";
-import { SplashScreen } from "expo-router";
+import { router, SplashScreen } from "expo-router";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 export type User = {
@@ -17,6 +17,7 @@ type AuthContextType = {
   changeLogin: (status: boolean) => void;
   changeAuthState: (authState: User | null) => void;
   checkAuth: () => void;
+  logout: () => void;
 };
 
 const initialAuthContextState: AuthContextType = {
@@ -26,6 +27,7 @@ const initialAuthContextState: AuthContextType = {
   isLoggedIn: false,
   state: null,
   checkAuth: () => {},
+  logout: () => {},
 };
 
 const AuthContext = createContext<AuthContextType>(initialAuthContextState);
@@ -61,6 +63,13 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const logout = () => {
+    changeAuthState(null);
+    changeLogin(false);
+    removeAuthToken();
+    router.replace("/");
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -70,6 +79,7 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         changeAuthState,
         changeLogin,
         checkAuth,
+        logout,
       }}
     >
       {children}

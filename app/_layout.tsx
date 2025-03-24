@@ -13,12 +13,13 @@ import { useColors } from "@/config/useColors";
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Header from "@/Components/Header";
 
 SplashScreen.preventAutoHideAsync();
 export function RootLayout() {
   const isDark = useColorScheme() === "dark";
   const { lightModeColor } = useColors();
-  const { authChecking, checkAuth } = useAuthContext();
+  const { authChecking, checkAuth, logout } = useAuthContext();
 
   useEffect(() => {
     checkAuth();
@@ -42,8 +43,22 @@ export function RootLayout() {
       screenOptions={{
         headerShown: false,
         statusBarStyle: isDark ? "light" : "dark",
+        header: () => <Header onLogout={logout} />,
       }}
-    />
+    >
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "index",
+        }}
+      />
+      <Stack.Screen
+        name="/(Protected)/Home"
+        options={{
+          title: "Home",
+        }}
+      />
+    </Stack>
   );
 }
 

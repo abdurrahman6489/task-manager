@@ -27,11 +27,20 @@ export const getSingleTask = (token: string, taskId: string) => {
     headers: { authorization: getBearerToken(token) },
   });
 };
-export const updateSingleTask = (token: string, taskId: string) => {
+export const updateSingleTask = (
+  token: string,
+  taskId: string,
+  title: string,
+  description: string
+) => {
   const url = `${UPDATE_SINGLE_TASK_URL}/${taskId}`;
-  return axios.put<updateTaskResponseType>(url, {
-    headers: { authorization: getBearerToken(token) },
-  });
+  return axios.put<updateTaskResponseType>(
+    url,
+    { title, description },
+    {
+      headers: { authorization: getBearerToken(token) },
+    }
+  );
 };
 export const deleteSingleTask = (token: string, taskId: string) => {
   const url = `${DELETE_SINGLE_TASK_URL}/${taskId}`;

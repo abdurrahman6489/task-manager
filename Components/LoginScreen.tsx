@@ -137,8 +137,8 @@ const LoginScreen = () => {
         name="password"
       />
       <View style={{ minHeight: 10, marginBottom: 5 }}>
-        {errors.email && (
-          <Text style={{ color: dangerColor }}>{errors.email?.message}</Text>
+        {errors.password && (
+          <Text style={{ color: dangerColor }}>{errors.password?.message}</Text>
         )}
       </View>
       <View style={{ flexGrow: 1 }}></View>

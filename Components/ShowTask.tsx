@@ -10,6 +10,7 @@ import { toast } from "sonner-native";
 import { toastAutoHideDuration } from "@/constants";
 import { Alert } from "react-native";
 import AppProgressLoader from "./Loaders/AppProgressLoader";
+import { router } from "expo-router";
 const LeftContent = (props: { size: number }) => (
   <Avatar.Icon {...props} icon="alarm-panel" />
 );
@@ -64,8 +65,13 @@ const ShowTask = ({ item, handleAfterDelete }: showTaskProps) => {
       <View style={{ height: 5, paddingHorizontal: 10, marginVertical: 5 }}>
         {isDeleting ? <AppProgressLoader loading={isDeleting} /> : null}
       </View>
-      <Card.Actions>
-        <AppIconButton icon={"pencil"} size={20} disabled={isDeleting} />
+      <Card.Actions style={{ alignSelf: "flex-start" }}>
+        <AppIconButton
+          icon={"pencil"}
+          size={20}
+          disabled={isDeleting}
+          onPress={() => router.push(`/(Protected)/CreateTask?_id=${item._id}`)}
+        />
         <AppIconButton
           icon="delete"
           color="red"

@@ -1,9 +1,10 @@
 import { FlatList, StyleSheet, View } from "react-native";
 import React from "react";
-import { Text } from "react-native-paper";
+import { FAB, Text } from "react-native-paper";
 import AppProgressLoader from "@/Components/Loaders/AppProgressLoader";
 import { useTaskList } from "@/Hooks/useTaskList";
 import ShowTask from "@/Components/ShowTask";
+import { router } from "expo-router";
 
 type Props = {};
 
@@ -12,7 +13,7 @@ const TaskList = (props: Props) => {
     useTaskList();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { position: "relative" }]}>
       <Text variant="bodyLarge" style={{ textAlign: "center" }}>
         Your Tasks
       </Text>
@@ -31,6 +32,15 @@ const TaskList = (props: Props) => {
           <ShowTask item={item} handleAfterDelete={handleAfterDelete} />
         )}
       />
+      <View
+        style={{ position: "absolute", bottom: 10, right: 15, width: "auto" }}
+      >
+        <FAB
+          icon={"plus"}
+          size={"medium"}
+          onPress={() => router.push("/(Protected)/CreateTask")}
+        />
+      </View>
     </View>
   );
 };

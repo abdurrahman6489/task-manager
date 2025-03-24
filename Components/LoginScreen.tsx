@@ -16,7 +16,7 @@ import { router } from "expo-router";
 import { saveAuthToken } from "@/Utils/AuthToken";
 const logo = require("../assets/images/logo.jpg");
 const LoginScreen = () => {
-  const [isSecureEntry, setIsSecureEntry] = useState(false);
+  const [isSecureEntry, setIsSecureEntry] = useState(true);
   const { changeAuthState, changeLogin } = useAuthContext();
   const { darkModeColor, dangerColor, lightModeColor } = useColors();
   const [loading, setLoading] = useState(false);

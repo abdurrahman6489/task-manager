@@ -18,3 +18,13 @@ export const saveAuthToken = async (token: string) => {
     console.error("save auth token error", error);
   }
 };
+
+export const removeAuthToken = async () => {
+  try {
+    await AsyncStorage.removeItem(authTokenKey);
+  } catch (error) {
+    console.error("remove token error", error);
+  }
+};
+
+export const getBearerToken = (token: string) => `Bearer ${token}`;

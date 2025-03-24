@@ -12,30 +12,31 @@ import {
   GET_SINGLE_TASK_URL,
   UPDATE_SINGLE_TASK_URL,
 } from "@/URLS/tasks";
+import { getBearerToken } from "@/Utils/AuthToken";
 import axios from "axios";
 
 export const getAllTasks = (token: string) => {
   const url = GET_ALL_TASKS_URL;
   return axios.get<allTasksResponseType>(url, {
-    headers: { authorization: token },
+    headers: { authorization: getBearerToken(token) },
   });
 };
 export const getSingleTask = (token: string, taskId: string) => {
   const url = `${GET_SINGLE_TASK_URL}/${taskId}`;
   return axios.get<singleTaskResponseType>(url, {
-    headers: { authorization: token },
+    headers: { authorization: getBearerToken(token) },
   });
 };
-export const updateSingleTask = (token: string) => {
-  const url = UPDATE_SINGLE_TASK_URL;
+export const updateSingleTask = (token: string, taskId: string) => {
+  const url = `${UPDATE_SINGLE_TASK_URL}/${taskId}`;
   return axios.put<updateTaskResponseType>(url, {
-    headers: { authorization: token },
+    headers: { authorization: getBearerToken(token) },
   });
 };
-export const deleteSingleTask = (token: string) => {
-  const url = DELETE_SINGLE_TASK_URL;
+export const deleteSingleTask = (token: string, taskId: string) => {
+  const url = `${DELETE_SINGLE_TASK_URL}/${taskId}`;
   return axios.delete<deleteTaskResponseType>(url, {
-    headers: { authorization: token },
+    headers: { authorization: getBearerToken(token) },
   });
 };
 export const createSingleTask = (
@@ -47,6 +48,6 @@ export const createSingleTask = (
   return axios.post<createTaskResponseType>(
     url,
     { title, description },
-    { headers: { authorization: token } }
+    { headers: { authorization: getBearerToken(token) } }
   );
 };

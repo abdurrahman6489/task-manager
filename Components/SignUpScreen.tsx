@@ -2,7 +2,12 @@ import { StyleSheet, Text, View, ScrollView, Image } from "react-native";
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
-import { loginSchema, loginType } from "@/Types/signupLogin";
+import {
+  loginSchema,
+  loginType,
+  signupSchema,
+  signupType,
+} from "@/Types/signupLogin";
 import { useColors } from "@/config/useColors";
 import AppTextInput from "./AppTextInput";
 import { login } from "@/services/login";
@@ -14,13 +19,14 @@ import AppButton from "./AppButton";
 import { TextInput } from "react-native-paper";
 import { router } from "expo-router";
 import { saveAuthToken } from "@/Utils/AuthToken";
+import { signup } from "@/services/signup";
 const logo = require("../assets/images/logo.jpg");
 
-type LoginScreenProps = {
-  switchToSignup: () => void;
+type SignupScreenProps = {
+  switchToLogin: () => void;
 };
 
-const LoginScreen = ({ switchToSignup }: LoginScreenProps) => {
+const SignupScreen = ({ switchToLogin }: SignupScreenProps) => {
   const [isSecureEntry, setIsSecureEntry] = useState(true);
   const { changeAuthState, changeLogin } = useAuthContext();
   const { darkModeColor, dangerColor, lightModeColor } = useColors();
@@ -29,43 +35,39 @@ const LoginScreen = ({ switchToSignup }: LoginScreenProps) => {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<loginType>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<signupType>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
-  const loginUser = async (user: loginType) => {
+  const signupUser = async (user: signupType) => {
     try {
       setLoading(true);
-      const { data } = await login(user);
+      const { data } = await signup(user);
       if (!data.success) {
-        toast.error(data.error || "Unable to login, Please try later", {
+        toast.error(data.error || "Unable to sign up, Please try later", {
           duration: toastAutoHideDuration,
         });
-        changeLogin(false);
-        changeAuthState(null);
         return;
       }
-      const token = data.token;
-      const authState = getAuthStateFromToken(token);
-      changeAuthState(authState);
-      changeLogin(true);
-      saveAuthToken(token);
-      router.push("/(Protected)/Home");
-      toast.success(data.message || "logged in successfully", {
-        duration: toastAutoHideDuration,
-      });
+
+      switchToLogin();
+      toast.success(
+        data.message || "Signed up successfully, Please login now",
+        {
+          duration: toastAutoHideDuration,
+        }
+      );
     } catch (error: any) {
-      console.error("login error", error);
+      console.error("login error", JSON.stringify(error, null, 2));
       const msg = error?.response?.data?.error;
-      toast.error(msg || "Unable to login, Please try later", {
+      toast.error(msg || "Unable to sign up, Please try later", {
         duration: toastAutoHideDuration,
       });
-      changeLogin(false);
-      changeAuthState(null);
     } finally {
       setLoading(false);
     }
@@ -87,6 +89,27 @@ const LoginScreen = ({ switchToSignup }: LoginScreenProps) => {
         Task Manager
       </Text>
 
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <AppTextInput
+            placeholder="Enter Your Name"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            style={{ backgroundColor: lightModeColor }}
+            textColor={darkModeColor}
+            label={"Name"}
+            keyboardType="default"
+          />
+        )}
+        name="name"
+      />
+      <View style={{ minHeight: 10, marginBottom: 5 }}>
+        {errors.name && (
+          <Text style={{ color: dangerColor }}>{errors.name?.message}</Text>
+        )}
+      </View>
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
@@ -139,31 +162,31 @@ const LoginScreen = ({ switchToSignup }: LoginScreenProps) => {
       <View style={{ flexGrow: 1 }}></View>
       <View style={styles.btnContainer}>
         <AppButton
-          onPress={handleSubmit(loginUser)}
+          onPress={handleSubmit(signupUser)}
           loading={loading}
           disabled={loading}
           style={{
             marginVertical: 10,
           }}
         >
-          {loading ? "Logging in" : "Login"}
+          {loading ? "Please wait..." : "Sign up"}
         </AppButton>
         <AppButton
-          onPress={switchToSignup}
+          onPress={switchToLogin}
           disabled={loading}
           mode="text"
           style={{
             marginVertical: 10,
           }}
         >
-          New User? Register here
+          Already Registered? Login here
         </AppButton>
       </View>
     </ScrollView>
   );
 };
 
-export default LoginScreen;
+export default SignupScreen;
 
 const styles = StyleSheet.create({
   container: {

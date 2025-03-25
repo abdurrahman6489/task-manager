@@ -5,6 +5,7 @@ import AppProgressLoader from "@/Components/Loaders/AppProgressLoader";
 import { useTaskList } from "@/Hooks/useTaskList";
 import ShowTask from "@/Components/ShowTask";
 import { router } from "expo-router";
+import AppDivider from "@/Components/AppDivider";
 
 type Props = {};
 
@@ -17,11 +18,27 @@ const TaskList = (props: Props) => {
       <Text variant="bodyLarge" style={{ textAlign: "center" }}>
         Your Tasks
       </Text>
+
+      {/* loader */}
       <View style={{ height: 5, marginVertical: 10 }}>
         {taskListData.loading ? (
           <AppProgressLoader loading={taskListData.loading} />
-        ) : null}
+        ) : (
+          <AppDivider style={{ height: 0.5 }} />
+        )}
       </View>
+
+      {/* no task added show */}
+      {!taskListData.loading && taskListData?.list?.length === 0 ? (
+        <Text
+          variant="bodyLarge"
+          style={{ marginVertical: 8, textAlign: "center" }}
+        >
+          No tasks added yet...
+        </Text>
+      ) : null}
+
+      {/* tasks */}
       <FlatList
         data={taskListData?.list}
         keyExtractor={(item, index) => `${item._id}`}
@@ -32,6 +49,8 @@ const TaskList = (props: Props) => {
           <ShowTask item={item} handleAfterDelete={handleAfterDelete} />
         )}
       />
+
+      {/* add task */}
       <View
         style={{ position: "absolute", bottom: 10, right: 15, width: "auto" }}
       >
